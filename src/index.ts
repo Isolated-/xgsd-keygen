@@ -1,5 +1,5 @@
-import { generateMnemonic } from "bip39";
-import { Buffer } from "buffer";
+import { generateMnemonic } from "@scure/bip39";
+import { wordlist } from "@scure/bip39/wordlists/english";
 
 export const PASSPHRASE_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>/?]).{12,}$/;
@@ -87,7 +87,7 @@ export const generateMasterKey = async (
     throw new Error("mnemonic does not contain 12 words");
   }
 
-  const mnemonic = mnemonicString || generateMnemonic();
+  const mnemonic = mnemonicString || generateMnemonic(wordlist, 128);
 
   const passwordBuf = encodeUTF8(passphraseString);
   const saltBuf = encodeUTF8(mnemonic);
@@ -95,7 +95,7 @@ export const generateMasterKey = async (
   const derivedKey = await pbkdf2Derive(
     passwordBuf,
     saltBuf,
-    50000,
+    300000,
     32,
     "sha256"
   );
