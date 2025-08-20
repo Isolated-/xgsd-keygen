@@ -1,4 +1,5 @@
 import { generateMnemonic } from "bip39";
+import { Buffer } from "buffer";
 
 export const PASSPHRASE_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>/?]).{12,}$/;
