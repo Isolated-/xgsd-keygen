@@ -1,11 +1,56 @@
 import { generateMnemonic } from "bip39";
-import { promisify } from "util";
-const asyncPbkdf2 = promisify(require("crypto").pbkdf2);
 
 export const PASSPHRASE_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>/?]).{12,}$/;
 
 export const MNEMONIC_REGEX = /^([a-z]+ ){11}[a-z]+$/;
+
+// Utility: detect Node vs Browser
+const isNode = typeof process !== "undefined" && process.versions?.node;
+
+// Helper to convert string to Uint8Array
+const encodeUTF8 = (str: string) =>
+  isNode ? Buffer.from(str, "utf-8") : new TextEncoder().encode(str);
+
+// PBKDF2 wrapper
+const pbkdf2Derive = async (
+  password: Uint8Array,
+  salt: Uint8Array,
+  iterations: number,
+  keyLen: number,
+  hash: "sha256" | "sha512"
+): Promise<Uint8Array> => {
+  if (isNode) {
+    const { pbkdf2 } = await import("crypto");
+    return new Promise((resolve, reject) => {
+      pbkdf2(password, salt, iterations, keyLen, hash, (err, derived) => {
+        if (err) reject(err);
+        else resolve(derived);
+      });
+    });
+  } else {
+    const cryptoKey = await crypto.subtle.importKey(
+      "raw",
+      password,
+      { name: "PBKDF2" },
+      false,
+      ["deriveBits"]
+    );
+
+    const bits = await crypto.subtle.deriveBits(
+      {
+        name: "PBKDF2",
+        salt,
+        iterations,
+        hash: hash.toUpperCase(),
+      },
+      cryptoKey,
+      keyLen * 8
+    );
+
+    return new Uint8Array(bits);
+  }
+};
 
 export interface MasterKey {
   /**
@@ -17,7 +62,7 @@ export interface MasterKey {
    * The mnemonic phrase used to generate the key.
    * @note If a mnemonic is provided, it will not be included in the output.
    */
-  mnemonic?: string;
+  mnemonic?: string | undefined;
 }
 
 /**
@@ -41,29 +86,29 @@ export const generateMasterKey = async (
     throw new Error("mnemonic does not contain 12 words");
   }
 
-  const passphraseBuf = Buffer.from(passphraseString, "utf-8");
-  const mnemonicBuf = mnemonicString
-    ? Buffer.from(mnemonicString, "utf-8")
-    : generateMnemonic();
+  const mnemonic = mnemonicString || generateMnemonic();
 
-  const key = await asyncPbkdf2(
-    passphraseBuf,
-    mnemonicBuf,
+  const passwordBuf = encodeUTF8(passphraseString);
+  const saltBuf = encodeUTF8(mnemonic);
+
+  const derivedKey = await pbkdf2Derive(
+    passwordBuf,
+    saltBuf,
     50000,
     32,
     "sha256"
   );
 
   const output: MasterKey = {
-    key: key.toString("hex"),
-    mnemonic: mnemonicBuf.toString("utf-8"),
+    key: Array.from(derivedKey)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join(""),
+    mnemonic: mnemonicString ? undefined : mnemonic,
   };
 
-  key.fill(0);
-
-  if (mnemonicString) {
-    delete output.mnemonic;
-  }
+  derivedKey.fill(0);
+  passwordBuf.fill(0);
+  saltBuf.fill(0);
 
   return output;
 };
