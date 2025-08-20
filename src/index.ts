@@ -1,5 +1,8 @@
 import { generateMnemonic } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english";
+import { pbkdf2 as noblePbkdf2 } from "@noble/hashes/pbkdf2";
+import { sha256 as nobleSha256 } from "@noble/hashes/sha2";
+import { sha512 as nobleSha512 } from "@noble/hashes/sha2";
 
 export const PASSPHRASE_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>/?]).{12,}$/;
@@ -21,36 +24,40 @@ const pbkdf2Derive = async (
   keyLen: number,
   hash: "sha256" | "sha512"
 ): Promise<Uint8Array> => {
+  // 1) Node path
   if (isNode) {
     const { pbkdf2 } = await import("crypto");
     return new Promise((resolve, reject) => {
-      pbkdf2(password, salt, iterations, keyLen, hash, (err, derived) => {
+      pbkdf2(password, salt, iterations, keyLen, hash, (err, out) => {
         if (err) reject(err);
-        else resolve(derived);
+        else resolve(new Uint8Array(out));
       });
     });
-  } else {
-    const cryptoKey = await crypto.subtle.importKey(
+  }
+
+  // 2) Browser with WebCrypto PBKDF2
+  const subtle = (globalThis as any)?.crypto?.subtle;
+  if (subtle) {
+    const hashName = hash === "sha256" ? "SHA-256" : "SHA-512"; // <-- hyphen matters
+    const baseKey = await subtle.importKey(
       "raw",
       password,
       { name: "PBKDF2" },
       false,
       ["deriveBits"]
     );
-
-    const bits = await crypto.subtle.deriveBits(
-      {
-        name: "PBKDF2",
-        salt,
-        iterations,
-        hash: hash.toUpperCase(),
-      },
-      cryptoKey,
+    const bits = await subtle.deriveBits(
+      { name: "PBKDF2", salt, iterations, hash: hashName },
+      baseKey,
       keyLen * 8
     );
-
     return new Uint8Array(bits);
   }
+
+  // 3) Fallback: pure JS (works everywhere)
+  const h = hash === "sha256" ? nobleSha256 : nobleSha512;
+  const out = noblePbkdf2(h, password, salt, { c: iterations, dkLen: keyLen });
+  return out;
 };
 
 export interface MasterKey {
