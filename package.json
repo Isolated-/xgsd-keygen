@@ -1,17 +1,15 @@
 {
   "name": "xgsd-keygen",
   "version": "1.0.0",
-  "description": "Yet another typescript library starter template",
+  "description": "Key generation library for xGSD - open source for transparency and criticism",
   "keywords": [
-    "typescript",
-    "library",
-    "starter",
-    "template"
+    "xgsd",
+    "crypto"
   ],
-  "homepage": "https://github.com/gjuchault/typescript-library-starter",
-  "bugs": "https://github.com/gjuchault/typescript-library-starter/issues",
-  "author": "Gabriel Juchault <gabriel.juchault@gmail.com>",
-  "repository": "gjuchault/typescript-library-starter",
+  "homepage": "https://github.com/Isolated-/xgsd-keygen",
+  "bugs": "https://github.com/Isolated-/xgsd-keygen/issues",
+  "author": "Michael Palmer <mike@xgsd.io>",
+  "repository": "Isolated-/xgsd-keygen",
   "type": "module",
   "exports": "./build/index.js",
   "types": "./build/index.d.ts",
