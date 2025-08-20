@@ -1,0 +1,44 @@
+{
+  "name": "xgsd-keygen",
+  "version": "1.0.0",
+  "description": "Yet another typescript library starter template",
+  "keywords": [
+    "typescript",
+    "library",
+    "starter",
+    "template"
+  ],
+  "homepage": "https://github.com/gjuchault/typescript-library-starter",
+  "bugs": "https://github.com/gjuchault/typescript-library-starter/issues",
+  "author": "Gabriel Juchault <gabriel.juchault@gmail.com>",
+  "repository": "gjuchault/typescript-library-starter",
+  "type": "module",
+  "exports": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "license": "MIT",
+  "engines": {
+    "node": "^24.3.0",
+    "npm": "^11.4.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rimraf build && tsgo --project tsconfig.build.json",
+    "clean": "rimraf build coverage",
+    "test": "jest --config jest.config.js",
+    "test:cov": "jest --config jest.config.js --coverage"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "@typescript/native-preview": "^7.0.0-dev.20250721.1",
+    "jest": "^30.0.5",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "bip39": "^3.1.0"
+  }
+}
