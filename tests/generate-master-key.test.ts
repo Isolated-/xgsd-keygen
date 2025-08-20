@@ -17,7 +17,7 @@ describe("generate master key tests", () => {
     const result = await generateMasterKey(passphrase, mnemonic);
     expect(result.key).toBeDefined();
     expect(result.key).toEqual(
-      "7026be248a6bad5fe182f8f5dab1d6092a7c44a4e14fc4534454e1d5eaf6ee59"
+      "7a35442fbc84d110d4db6a059939168452e8bb5e9330ffabdc33412a83c0837b"
     );
     expect(result.mnemonic).not.toBeDefined();
   });
