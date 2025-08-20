@@ -1,77 +1,36 @@
-# TypeScript Library Starter
+# Key Generation for xGSD
 
-![NPM](https://img.shields.io/npm/l/@gjuchault/typescript-library-starter)
-![NPM](https://img.shields.io/npm/v/@gjuchault/typescript-library-starter)
-![GitHub Workflow Status](https://github.com/gjuchault/typescript-library-starter/actions/workflows/typescript-library-starter.yml/badge.svg?branch=main)
+## Installation
 
-Yet another (opinionated) TypeScript library starter template.
+Install this library with yarn or npm:
 
-If you're looking for a backend service starter, check out my [typescript-service-starter](https://github.com/gjuchault/typescript-service-starter)
+```sh
+# yarn
+yarn add xgsd-keygen
 
-## Opinions and limitations
+# npm
+npm install xgsd-keygen
+```
 
-1. Relies as much as possible on each included library's defaults
-2. Only relies on GitHub Actions
-3. Does not include documentation generation
-
-## Getting started
-
-1. `npx degit gjuchault/typescript-library-starter my-project` or click on the `Use this template` button on GitHub!
-2. `cd my-project`
-3. `npm install`
-4. `git init` (if you used degit)
-5. `node --run setup`
-
-To enable deployment, you will need to:
-
-1. Set up the `NPM_TOKEN` secret in GitHub Actions ([Settings > Secrets > Actions](https://github.com/gjuchault/typescript-library-starter/settings/secrets/actions))
-2. Give `GITHUB_TOKEN` write permissions for GitHub releases ([Settings > Actions > General](https://github.com/gjuchault/typescript-library-starter/settings/actions) > Workflow permissions)
-
-## Features
-
-### Node.js, npm version
-
-TypeScript Library Starter relies on [Volta](https://volta.sh/) to ensure the Node.js version is consistent across developers. It's also used in the GitHub workflow file.
-
-### TypeScript
-
-Leverages [Typescript 7](https://github.com/microsoft/typescript-go) for blazing-fast builds and type-checking.
-Generates a single ESM build.
-
-Commands:
-
-- `build`: runs type checking, then ESM and `d.ts` files in the `build/` directory
-- `clean`: removes the `build/` directory
-- `type:check`: runs type checking
-
-### Tests
-
-TypeScript Library Starter uses [Node.js's native test runner](https://nodejs.org/api/test.html). Coverage is done using [c8](https://github.com/bcoe/c8) but will switch to Node.js's one once out.
+## Tests
 
 Commands:
 
 - `test`: runs test runner
-- `test:watch`: runs test runner in watch mode
-- `test:coverage`: runs test runner and generates coverage reports
+- `test:cov`: runs test runner and generates coverage reports
 
-### Format & lint
+## Usage
 
-This template relies on [Biome](https://biomejs.dev/) to do both formatting & linting in no time.
-It also uses [cspell](https://github.com/streetsidesoftware/cspell) to ensure correct spelling.
+Using this library is super simple (and opinionated), example usage:
 
-Commands:
+```ts
+// import the function
+import { generateMasterKey } from "xgsd-keygen";
 
-- `lint`: runs Biome with automatic fixing
-- `lint:check`: runs Biome without automatic fixing (used in CI)
-- `spell:check`: runs spell checking
+const masterKey = await generateMasterKey("Passphrase1234!");
+// masterKey.key is a Hexidecimal string, mnemonic will contain 12 words
+```
 
-### Releasing
+## Notice
 
-Under the hood, this library uses [semantic-release](https://github.com/semantic-release/semantic-release) and [Commitizen](https://github.com/commitizen/cz-cli).
-The goal is to avoid manual release processes. Using `semantic-release` will automatically create a GitHub release (hence tags) as well as an npm release.
-Based on your commit history, `semantic-release` will automatically create a patch, feature, or breaking release.
-
-Commands:
-
-- `cz`: interactive CLI that helps you generate a proper git commit message, using [Commitizen](https://github.com/commitizen/cz-cli)
-- `semantic-release`: triggers a release (used in CI)
+This package is publicly available in compliance with Make Data Mine Again 2025 (our internal policy at Myked and xGSD). We cannot offer support or maintainence outside of our project.
