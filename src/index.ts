@@ -8,10 +8,27 @@ export const PASSPHRASE_REGEX =
 export const MNEMONIC_REGEX = /^([a-z]+ ){11}[a-z]+$/;
 
 export interface MasterKey {
+  /**
+   * The derived key in hexadecimal format.
+   */
   key: string;
+
+  /**
+   * The mnemonic phrase used to generate the key.
+   * @note If a mnemonic is provided, it will not be included in the output.
+   */
   mnemonic?: string;
 }
 
+/**
+ * Generates a master key using a passphrase and an optional mnemonic.
+ * The passphrase must be strong, and the mnemonic must consist of 12 words.
+ *
+ * @param {string} passphraseString - The passphrase to derive the key from.
+ * @param {string} [mnemonicString] - An optional mnemonic string.
+ * @returns {Promise<MasterKey>} A promise that resolves to the generated master key.
+ * @throws {Error} If the passphrase is too weak or if the mnemonic does not contain 12 words.
+ */
 export const generateMasterKey = async (
   passphraseString: string,
   mnemonicString?: string
